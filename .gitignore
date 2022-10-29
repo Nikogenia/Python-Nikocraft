@@ -1,0 +1,8 @@
+# Jetbrains IDE files
+.idea
+
+# Python cache files
+__pycache__
+
+# Test file
+test.py
