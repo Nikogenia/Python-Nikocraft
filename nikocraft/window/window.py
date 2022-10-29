@@ -9,7 +9,9 @@ import ctypes
 import pygame as pg
 
 # Local modules
+from ..constants import *
 from ..app import App
+from .vector2d import Vec
 
 
 class Window(ABC):
@@ -20,15 +22,26 @@ class Window(ABC):
     def __init__(self, app: App) -> None:
 
         self.screen: pg.Surface = pg.Surface((0, 0))
-        self.target_resolution = ()
+        self.target_dimension = Vec(DEFAULT_WIDTH, DEFAULT_HEIGHT)
         self.running: bool = False
+        self.max_fps = DEFAULT_FPS
         self.flags: int = 0
 
         pg.init()
 
-        pg.Vector2().y
-
         self._initialized = True
+
+    @property
+    def width(self):
+        return self.screen.get_width()
+
+    @property
+    def height(self):
+        return self.screen.get_height()
+
+    @property
+    def dimension(self):
+        return Vec(self.screen.get_width(), self.screen.get_height())
 
     def open(self) -> None:
         """Open the window
@@ -38,9 +51,10 @@ class Window(ABC):
 
         assert self._initialized, "Application was not initialized!"
 
-        self.screen = pg.display.set_mode()
+        self.screen = pg.display.set_mode(self.target_dimension, self.flags)
 
-        while
+        while self.running:
+            break
 
         self.quit()
         pg.quit()

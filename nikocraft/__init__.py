@@ -4,10 +4,16 @@ import os
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = ""
 
 from .app import App
-from .constants import *
+from . import window
+from .window.vector2d import Vec
+from .constants import AUTHOR, VERSION
 
 __all__ = [
-    "App"
+    "App",
+    "AUTHOR",
+    "VERSION",
+    "window",
+    "Vec"
 ]
 
 del os
