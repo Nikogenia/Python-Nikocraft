@@ -6,12 +6,14 @@ import os
 import ctypes
 
 # External modules
+os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = ""
 import pygame as pg
 
 # Local modules
 from ..constants import *
 from ..app import App
 from .vector2d import Vec
+from .clock import Clock
 
 
 class Window(ABC):
@@ -22,10 +24,12 @@ class Window(ABC):
     def __init__(self, app: App) -> None:
 
         self.screen: pg.Surface = pg.Surface((0, 0))
-        self.target_dimension = Vec(DEFAULT_WIDTH, DEFAULT_HEIGHT)
+        self.target_dimension: Vec = Vec(DEFAULT_WIDTH, DEFAULT_HEIGHT)
         self.running: bool = False
-        self.max_fps = DEFAULT_FPS
+        self.clock: Clock = Clock(DEFAULT_FPS)
         self.flags: int = 0
+        self.option_auto_update_screen: bool = True
+        self.option_auto_quit: bool = True
 
         pg.init()
 
@@ -51,13 +55,39 @@ class Window(ABC):
 
         assert self._initialized, "Application was not initialized!"
 
-        self.screen = pg.display.set_mode(self.target_dimension, self.flags)
+        self.screen: pg.Surface = pg.display.set_mode(self.target_dimension, self.flags)
+        self.init()
+
+        self.running = True
 
         while self.running:
-            break
+
+            self.clock.tick()
+
+            for event in pg.event.get():
+
+                self.event(event)
+
+                if event.type == pg.QUIT and self.option_auto_quit:
+                    self.running = False
+
+            self.render()
+
+            if self.option_auto_update_screen:
+                pg.display.flip()
 
         self.quit()
         pg.quit()
+
+    @abstractmethod
+    def init(self) -> None:
+        """Startup tasks
+
+        *Called after window is opened -
+        Don't call this method manually*
+        """
+
+        pass
 
     @abstractmethod
     def event(self, event: pg.event.Event) -> None:

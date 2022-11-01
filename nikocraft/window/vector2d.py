@@ -35,6 +35,22 @@ class Vec(tuple):
     def yy(self) -> Self:
         return Vec(self[1], self[1])
 
+    @property
+    def rounded(self) -> bool:
+        return isinstance(self[0], int) and isinstance(self[1], int)
+
+    @property
+    def normalized(self) -> bool:
+        return self.length == 1
+
+    @property
+    def length(self) -> float:
+        return math.sqrt(self[0] ** 2 + self[1] ** 2)
+
+    @property
+    def length_squared(self) -> float:
+        return self[0] ** 2 + self[1] ** 2
+
     def list(self) -> List[Union[int, float]]:
         """Create a list with the x and y values as elements"""
         return [*self]
@@ -50,6 +66,24 @@ class Vec(tuple):
     def distance_squared(self, other: Self) -> float:
         """Calculate the squared distance to another vector"""
         return abs(self[0] - other[0]) + abs(self[1] - other[1])
+
+    def normalize(self) -> Self:
+        """Normalize the vector to a length of 1"""
+        if self.length == 0:
+            return Vec(0, 0)
+        return self.__truediv__(self.length)
+
+    def round(self, n: int = None) -> Self:
+        """Round the vector to a vector with integer values"""
+        return self.__round__(n)
+
+    def floor(self) -> Self:
+        """Floor the vector to a vector with integer values"""
+        return self.__floor__()
+
+    def ceil(self) -> Self:
+        """Ceil the vector to a vector with integer values"""
+        return self.__ceil__()
 
     def __eq__(self, other: Self) -> bool:
         return self[0] == other[0] and self[1] == other[1]
@@ -71,6 +105,9 @@ class Vec(tuple):
 
     def __floordiv__(self, divisor: Union[int, float]) -> Self:
         return Vec(self[0] // divisor, self[1] // divisor)
+
+    def __pow__(self, power: float, modulo: float = None):
+        return Vec(pow(self[0], power, modulo), pow(self[1], power, modulo))
 
     def __round__(self, n: int = None) -> Self:
         return Vec(round(self[0], n), round(self[1], n))

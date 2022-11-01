@@ -24,14 +24,14 @@ class App(ABC):
         self.args: list[AnyStr] = args if args else sys.argv
         self.debug: bool = "-d" in args or "--debug" in args
 
-        self.exit_code = 0
+        self.exit_code: int = 0
 
-        self._initialized = True
+        self._initialized: bool = True
 
     def start(self) -> int:
         """Start the application
 
-        *Returns the exit code*
+        Returns the exit code
         """
 
         assert self._initialized, "Application was not initialized!"
@@ -45,8 +45,8 @@ class App(ABC):
     def run(self) -> None:
         """Application execution
 
-        *Called on starting -
-        Don't call this method manually*
+        Called on starting -
+        Don't call this method manually
         """
 
         pass
@@ -55,8 +55,8 @@ class App(ABC):
     def quit(self) -> None:
         """Shutdown tasks
 
-        *Called before exiting -
-        Don't call this method manually*
+        Called before exiting -
+        Don't call this method manually
         """
 
         pass
@@ -65,7 +65,7 @@ class App(ABC):
     def disable_resolution_scaling() -> None:
         """Disable resolution scaling on Windows
 
-        *Returns nothing*
+        Returns nothing
         """
 
         if os.name == "nt":

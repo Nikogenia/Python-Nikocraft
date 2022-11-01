@@ -6,3 +6,8 @@ __pycache__
 
 # Test file
 test.py
+
+# Build files
+build
+dist
+nikocraft.egg-info
