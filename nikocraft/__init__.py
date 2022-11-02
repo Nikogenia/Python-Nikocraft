@@ -8,13 +8,15 @@ del os
 # Modules
 from . import window
 from .utils import time
-from .window import rgb
 
 # Classes
 from .app import App
 from .utils.config import Config
+from .utils.enum import Enum
 from .window.vector2d import Vec
 from .window.vector3d import Vec3
+from .window.rgb import RGB
+from .window.clock import Clock
 
 # Constants
 from .constants import AUTHOR, VERSION
@@ -22,11 +24,13 @@ from .constants import AUTHOR, VERSION
 __all__ = [
     "window",
     "time",
-    "rgb",
     "App",
     "Config",
+    "Enum",
     "Vec",
     "Vec3",
+    "RGB",
+    "Clock",
     "AUTHOR",
     "VERSION"
 ]
