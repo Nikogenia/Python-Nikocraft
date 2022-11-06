@@ -1,7 +1,7 @@
 """Contains the 3D vector class"""
 
 # Standard modules
-from typing import Union, AnyStr, Tuple, Self, List, Dict
+from typing import Union, Tuple, Self, List, Dict
 import math
 
 # Local modules
@@ -190,7 +190,7 @@ class Vec3(tuple):
         """Create a list with the x and y values as elements"""
         return [*self]
 
-    def dict(self, keys: Tuple[AnyStr, AnyStr, AnyStr] = ("x", "y", "z")) -> Dict[AnyStr, Union[int, float]]:
+    def dict(self, keys: Tuple[str, str, str] = ("x", "y", "z")) -> Dict[str, Union[int, float]]:
         """Create a dictionary with the x and y values as value of specific keys"""
         return {keys[0]: self[0], keys[1]: self[1], keys[2]: self[2]}
 
@@ -262,8 +262,8 @@ class Vec3(tuple):
     def __neg__(self) -> Self:
         return Vec3(-self[0], -self[1], -self[2])
 
-    def __repr__(self) -> AnyStr:
+    def __repr__(self) -> str:
         return f"Vec3[id={id(self)}, x={self[0]}, y={self[1]}, z={self[2]}]"
 
-    def __str__(self) -> AnyStr:
+    def __str__(self) -> str:
         return f"({self[0]}, {self[1]}, {self[2]})"

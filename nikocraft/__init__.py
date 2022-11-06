@@ -8,6 +8,7 @@ del os
 # Modules
 from . import window
 from .utils import time
+from .utils import file
 
 # Classes
 from .app import App
