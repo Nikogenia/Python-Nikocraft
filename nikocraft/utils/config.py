@@ -1,12 +1,9 @@
 """Contains the config class for saving JSON configurations"""
 
 # Standard modules
-from typing import AnyStr, Dict, Any
+from typing import Any
 from abc import ABC, abstractmethod
 import json
-
-# External modules
-import pygame as pg
 
 # Local modules
 from ..utils import time
@@ -25,7 +22,7 @@ class Config(ABC):
         print(vars(self))
 
     @abstractmethod
-    def load_attribute(self, attribute: str, data: Dict) -> Any:
+    def load_attribute(self, attribute: str, data: dict) -> Any:
         """Load an attribute from data (Return result or None for automatic loading)
 
         *Called on loading -
@@ -34,5 +31,5 @@ class Config(ABC):
 
         pass
 
-    def __repr__(self) -> AnyStr:
+    def __repr__(self) -> str:
         return f"Config[id={id(self)}, path={self.path}]"

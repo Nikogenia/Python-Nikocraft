@@ -1,5 +1,4 @@
-# Standard modules
-from typing import List
+"""Contains the enum class and metaclass"""
 
 
 class EnumError(Exception):
@@ -16,23 +15,15 @@ class EnumMeta(type):
 
         # Create class
         attrs["__build__"] = None
-        attrs["__type__"] = None
         __enum = type.__new__(mcs, name, bases, attrs)
 
         # Generate enum elements
         for attr, value in __enum.__annotations__.items():
             if value == int:
-                mcs.__define_type(__enum, "int")
                 setattr(__enum, attr, mcs.__unique)
                 mcs.__unique += 1
             elif value == str:
-                mcs.__define_type(__enum, "str")
                 setattr(__enum, attr, attr)
-        for attr, value in attrs.items():
-            if value.__class__ == tuple:
-                mcs.__define_type(__enum, "cls")
-                setattr(__enum, attr, __enum(*value))
-                __enum.__annotations__[attr] = __enum
 
         # Return class
         delattr(__enum, "__build__")
@@ -40,8 +31,13 @@ class EnumMeta(type):
 
     def __setattr__(cls, key, value):
         if "__build__" not in cls.__dict__:
-            raise EnumError("Changing of enum elements is not allowed!")
+            raise EnumError("Changing enum elements is not allowed!")
         type.__setattr__(cls, key, value)
+
+    def __delattr__(cls, key):
+        if "__build__" not in cls.__dict__:
+            raise EnumError("Deleting enum elements is not allowed!")
+        type.__delattr__(cls, key)
 
     def __contains__(cls, item):
         cls.__check_enum(cls)
@@ -51,32 +47,38 @@ class EnumMeta(type):
         cls.__check_enum(cls)
         return iter(getattr(cls, "values"))
 
+    def __len__(cls):
+        return len(getattr(cls, "values"))
+
     def __getitem__(cls, item):
         if item not in cls:
             raise KeyError(f"Cannot find '{item}' in '{cls}'!")
         return getattr(cls, item)
 
-    @staticmethod
-    def __define_type(enum, name):
-        if enum.__dict__["__type__"] not in [None, name]:
-            raise EnumError("Invalid enum declaration! Can't use different types together!")
-        setattr(enum, "__type__", name)
+    def __setitem__(cls, item, value):
+        raise EnumError("Changing enum elements is not allowed!")
+
+    def __delitem__(cls, item):
+        raise EnumError("Deleting enum elements is not allowed!")
+
+    def __call__(cls, element: str):
+        if element not in cls:
+            raise KeyError(f"Cannot find '{element}' in '{cls}'!")
+        return getattr(cls, element)
 
     @staticmethod
-    def __check_enum(enum):
+    def __check_enum(enum) -> None:
         if not hasattr(enum, "values"):
             raise EnumError("Enums need to inherit from Enum (not EnumMeta)!")
 
     @property
-    def values(cls) -> List:
+    def values(cls) -> list:
         """Returns all enum elements as a list"""
 
         elements = []
-        for a, v in cls.__dict__.items():
-            if a.startswith("__"):
-                continue
-            if v.__class__ in [cls, int, str]:
-                elements.append(v)
+        for name, value in cls.__dict__.items():
+            if not name.startswith("__") and type(value) != list:
+                elements.append(value)
         return elements
 
 
@@ -100,15 +102,10 @@ class Enum(metaclass=EnumMeta):
 
 
     Custom enum:
-    elem1 = arg1, arg2, ...
-    elem2 = arg1, arg2, ...
+    elem1 = Class(arg1, arg2, ...)
+    elem2 = Class(arg1, arg2, ...)
     ...
 
-    Generates a enum with the tuple values as arguments for the enum objects as elements
+    Generates a enum with custom objects
 
     """
-
-    def __get__(self, instance, owner):
-        if instance is not None:
-            raise EnumError("Accessing enum elements from instance is not allowed!")
-        return self

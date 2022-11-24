@@ -23,6 +23,8 @@ class Window(ABC):
 
     def __init__(self, app: App) -> None:
 
+        self.app = app
+
         self.screen: pg.Surface = pg.Surface((0, 0))
         self.target_dimension: Vec = Vec(DEFAULT_WIDTH, DEFAULT_HEIGHT)
         self.running: bool = False
@@ -116,3 +118,13 @@ class Window(ABC):
         """
 
         pass
+
+    @staticmethod
+    def disable_resolution_scaling() -> None:
+        """Disable resolution scaling on Windows
+
+        Returns nothing
+        """
+
+        if os.name == "nt":
+            ctypes.windll.user32.SetProcessDPIAware()

@@ -1,7 +1,7 @@
 """Contains the 2D vector class"""
 
 # Standard modules
-from typing import Union, Tuple, Self, List, Dict
+from typing import Union, Self
 import math
 
 
@@ -51,11 +51,11 @@ class Vec(tuple):
     def length_squared(self) -> float:
         return self[0] ** 2 + self[1] ** 2
 
-    def list(self) -> List[Union[int, float]]:
+    def list(self) -> list[Union[int, float]]:
         """Create a list with the x and y values as elements"""
         return [*self]
 
-    def dict(self, keys: Tuple[str, str] = ("x", "y")) -> Dict[str, Union[int, float]]:
+    def dict(self, keys: tuple[str, str] = ("x", "y")) -> dict[str, Union[int, float]]:
         """Create a dictionary with the x and y values as value of specific keys"""
         return {keys[0]: self[0], keys[1]: self[1]}
 

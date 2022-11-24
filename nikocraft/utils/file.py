@@ -4,7 +4,7 @@
 import json
 import os
 from logging import Logger
-from typing import IO, Dict
+from typing import IO
 
 
 def open_file(path: str, mode: str, logger: Logger = None, *, create: bool = True, encoding: str = None) -> IO:
@@ -53,7 +53,7 @@ def open_utf8(path: str, mode: str, logger: Logger = None, *, create: bool = Tru
     return open_file(path, mode, logger, create=create, encoding="utf-8")
 
 
-def load_json(path: str, logger: Logger = None, *, create: bool = True) -> Dict:
+def load_json(path: str, logger: Logger = None, *, create: bool = True) -> dict:
     """Load a json file to a dictionary
 
     path: the path of the file
@@ -76,7 +76,7 @@ def load_json(path: str, logger: Logger = None, *, create: bool = True) -> Dict:
         return {}
 
 
-def save_json(path: str, data: Dict, logger: Logger = None) -> None:
+def save_json(path: str, data: dict, logger: Logger = None) -> None:
     """Load a json file to a dictionary
 
     path: the path of the file

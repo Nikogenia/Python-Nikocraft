@@ -5,10 +5,8 @@ from abc import ABC, abstractmethod
 import logging
 import os
 import sys
-import ctypes
 
 # External modules
-
 
 # Local modules
 from .constants import *
@@ -24,10 +22,10 @@ class App(ABC):
     def __init__(self, args: list[str] = None, *, name: str = "Sample Project", author: str = "Nikocraft",
                  version: str = "0.0.1", short_description: str = "A short description",
                  description: str = "This is a sample project for the nikocraft library ...",
-                 details: str = "Some more details ...", log_path: str = ".") -> None:
+                 details: str = "Some more details ...", log_path: str = "./logs", log_thread: bool = False) -> None:
 
         self.args: list[str] = args if args else sys.argv
-        self.debug: bool = "-d" in args or "--debug" in args
+        self.debug: bool = "-d" in self.args or "--debug" in self.args
         self.name: str = name
         self.author: str = author
         self.version: str = version
@@ -36,6 +34,7 @@ class App(ABC):
         self.details: str = details
         self.log_path: str = log_path
         self.log_file: str = f"{self.log_path}/log_{time.datetime_f_ymd_hms()}.log"
+        self.log_thread: bool = log_thread
 
         self.exit_code: int = 0
 
@@ -51,12 +50,12 @@ class App(ABC):
                 os.remove(file.join(self.log_path, log_files[i - 10]))
 
         self.head = f"{self.name.upper()}\n{'-' * len(self.name)}\n\n{self.short_description}\n\nDESCRIPTION\n{self.description}\n\n" \
-                    f"DETAILS\nVersion: {self.version}\nAuthor: {self.author}\nFramework: Nikocraft (v{VERSION})\n{self.details}\n\n"
+                    f"DETAILS\nVersion: {self.version}\nAuthor: {self.author}\nFramework: Nikocraft (v{VERSION})\n{self.details}\n"
         print(self.head)
         with file.open_utf8(self.log_file, "w") as f:
             f.write(self.head + "\n")
 
-        self.log_format = logging.Formatter("[%(asctime)s] [%(name)s - %(threadName)s] [%(levelname)s] %(message)s", '%d/%b/%y %H:%M:%S')
+        self.log_format = logging.Formatter(f"[%(asctime)s] [%(name)s{' - %(threadName)s' if self.log_thread else ''}] [%(levelname)s] %(message)s", '%d/%b/%y %H:%M:%S')
         self.log_handler_file = logging.FileHandler(self.log_file, encoding="utf-8")
         self.log_handler_console = logging.StreamHandler(sys.stdout)
         self.log_handler_file.setFormatter(self.log_format)
@@ -102,13 +101,3 @@ class App(ABC):
         """
 
         pass
-
-    @staticmethod
-    def disable_resolution_scaling() -> None:
-        """Disable resolution scaling on Windows
-
-        Returns nothing
-        """
-
-        if os.name == "nt":
-            ctypes.windll.user32.SetProcessDPIAware()

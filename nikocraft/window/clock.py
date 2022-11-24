@@ -1,8 +1,5 @@
 """Contains the clock class for time handling in pygame"""
 
-# Standard modules
-from typing import AnyStr, List
-
 # External modules
 import pygame as pg
 
@@ -22,7 +19,7 @@ class Clock:
         self.frame_count: int = 0
         self.frame_start: float = 0
         self.frame_end: float = 0
-        self.frame_durations: List[float] = [0] * statistic_speed
+        self.frame_durations: list[float] = [0] * statistic_speed
         self.frame_duration: float = 1
         self.last_update: float = 0
 
@@ -65,5 +62,5 @@ class Clock:
 
         self.frame_start: float = time.bench_time()
 
-    def __repr__(self) -> AnyStr:
+    def __repr__(self) -> str:
         return f"Clock[id={id(self)}, real_fps={self.real_fps}, available_fps={self.available_fps}, max_fps={self.max_fps}, speed_factor={self.speed_factor}, frame_count={self.frame_count}]"
