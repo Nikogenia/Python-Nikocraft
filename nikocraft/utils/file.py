@@ -17,7 +17,7 @@ def open_file(path: str, mode: str, logger: Logger = None, *, create: bool = Tru
     encoding: the encoding to use for the file
     """
 
-    if create and not exists(directory(path)):
+    if create and not exists(directory(path)) and not directory(path) == "":
         if logger:
             logger.info(f"Doesn't found directory '{directory(path)}'! Create directory ...")
         os.makedirs(directory(path))
@@ -34,7 +34,7 @@ def open_file(path: str, mode: str, logger: Logger = None, *, create: bool = Tru
             if logger:
                 logger.info(f"Failed to open file '{path}'! Create and try to load it again ...")
             open(path, "w", encoding=encoding).close()
-            return open_file(path, mode, logger, False)
+            return open_file(path, mode, logger, create=False)
         else:
             if logger:
                 logger.warning(f"Failed to open file '{path}'! Raise error ...")
