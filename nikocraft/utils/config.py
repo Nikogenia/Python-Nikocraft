@@ -20,10 +20,12 @@ class Config(ABC):
     def load(self) -> None:
         """Load data from JSON file at path"""
 
+        # Load file
         if self.logger:
             self.logger.debug(f"Load configuration file at '{self.path}' ...")
         data = file.load_json(self.path, self.logger, create=False)
 
+        # Decode data
         if self.logger:
             self.logger.debug("Decode configuration attributes ...")
         for attribute in vars(self):
@@ -39,6 +41,7 @@ class Config(ABC):
     def save(self) -> None:
         """Save data to JSON file at path"""
 
+        # Encode data
         data = {}
         if self.logger:
             self.logger.debug("Encode configuration attributes ...")
@@ -49,6 +52,7 @@ class Config(ABC):
             if result is None:
                 data[attribute] = getattr(self, attribute)
 
+        # Save file
         if self.logger:
             self.logger.debug(f"Save configuration file at '{self.path}' ...")
         file.save_json(self.path, data, self.logger)

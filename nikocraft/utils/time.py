@@ -1,4 +1,4 @@
-"""Interface for default modules time and datetime"""
+"""Interface for standard modules time and datetime"""
 
 # Standard modules
 import time as _time

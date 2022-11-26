@@ -8,6 +8,7 @@ del os
 # Modules
 from .utils import time
 from .utils import file
+from .utils import log
 
 # Classes
 from .app import App
@@ -25,6 +26,8 @@ from .constants import AUTHOR, VERSION
 
 __all__ = [
     "time",
+    "file",
+    "log",
     "App",
     "Config",
     "Enum",

@@ -23,8 +23,10 @@ class Window(ABC):
 
     def __init__(self, app: App) -> None:
 
+        # App
         self.app = app
 
+        # General information
         self.screen: pg.Surface = pg.Surface((0, 0))
         self.target_dimension: Vec = Vec(DEFAULT_WIDTH, DEFAULT_HEIGHT)
         self.running: bool = False
@@ -33,8 +35,10 @@ class Window(ABC):
         self.option_auto_update_screen: bool = True
         self.option_auto_quit: bool = True
 
+        # Initialize pygame
         pg.init()
 
+        # Set initialized flag
         self._initialized = True
 
     @property
@@ -55,29 +59,32 @@ class Window(ABC):
         *Returns nothing*
         """
 
-        assert self._initialized, "Application was not initialized!"
+        # Check for initialization
+        assert self._initialized, "Window was not initialized!"
 
+        # Open window
         self.screen: pg.Surface = pg.display.set_mode(self.target_dimension, self.flags)
         self.init()
 
+        # Window loop
         self.running = True
-
         while self.running:
 
+            # Clock tick
             self.clock.tick()
 
+            # Event handling
             for event in pg.event.get():
-
                 self.event(event)
-
                 if event.type == pg.QUIT and self.option_auto_quit:
                     self.running = False
 
+            # Screen rendering
             self.render()
-
             if self.option_auto_update_screen:
                 pg.display.flip()
 
+        # Shutdown
         self.quit()
         pg.quit()
 

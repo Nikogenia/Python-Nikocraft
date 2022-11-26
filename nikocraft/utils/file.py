@@ -1,4 +1,4 @@
-"""Interface for default modules os and json"""
+"""Interface for standard modules os and json"""
 
 # Standard modules
 import json
@@ -17,6 +17,7 @@ def open_file(path: str, mode: str, logger: Logger = None, *, create: bool = Tru
     encoding: the encoding to use for the file
     """
 
+    # Check for directory
     if create and not exists(directory(path)) and not directory(path) == "":
         if logger:
             logger.info(f"Doesn't found directory '{directory(path)}'! Create directory ...")
@@ -24,12 +25,14 @@ def open_file(path: str, mode: str, logger: Logger = None, *, create: bool = Tru
 
     try:
 
+        # Open file
         if logger:
             logger.debug(f"Open file '{path}' with mode '{mode}' ...")
         return open(path, mode, encoding=encoding)
 
     except OSError:
 
+        # Try to handle error
         if create:
             if logger:
                 logger.info(f"Failed to open file '{path}'! Create and try to load it again ...")
@@ -61,17 +64,20 @@ def load_json(path: str, logger: Logger = None, *, create: bool = True) -> dict:
     create: do create directories and file, if not existent
     """
 
+    # Return empty dictionary on missing file
     if not create and not exists(path):
         logger.warning(f"Doesn't found file '{path}'! Continue with empty dictionary ...")
         return {}
 
     try:
 
+        # Open and load dictionary
         with open_utf8(path, "r", logger) as f:
             return json.load(f)
 
     except json.JSONDecodeError:
 
+        # Return empty dictionary of error
         logger.warning(f"Failed to decode file '{path}' to json! Continue with empty dictionary ...")
         return {}
 
