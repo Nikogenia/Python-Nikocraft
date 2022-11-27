@@ -15,7 +15,7 @@ class EnumMeta(type):
 
         # Create class
         attrs["__build__"] = None
-        __enum = type.__new__(mcs, name, bases, attrs)
+        __enum = super().__new__(mcs, name, bases, attrs)
 
         # Generate enum elements
         for attr, value in __enum.__annotations__.items():
@@ -30,21 +30,22 @@ class EnumMeta(type):
         return __enum
 
     def __setattr__(cls, key, value):
-        if "__build__" not in cls.__dict__:
+        if "__build__" not in vars(cls):
             raise EnumError("Changing enum elements is not allowed!")
-        type.__setattr__(cls, key, value)
+        super().__setattr__(key, value)
 
     def __delattr__(cls, key):
-        if "__build__" not in cls.__dict__:
+        if "__build__" not in vars(cls):
             raise EnumError("Deleting enum elements is not allowed!")
-        type.__delattr__(cls, key)
+        super().__delattr__(key)
 
     def __contains__(cls, item):
-        cls.__check_enum(cls)
-        return item in getattr(cls, "values") or item in cls.__dict__.keys()
+        try:
+            return item in getattr(cls, "values")
+        except (IndexError, TypeError, KeyError):
+            return False
 
     def __iter__(cls):
-        cls.__check_enum(cls)
         return iter(getattr(cls, "values"))
 
     def __len__(cls):
@@ -52,7 +53,7 @@ class EnumMeta(type):
 
     def __getitem__(cls, item):
         if item not in cls:
-            raise KeyError(f"Cannot find '{item}' in '{cls}'!")
+            raise EnumError(f"Cannot find '{item}' in '{cls}'!")
         return getattr(cls, item)
 
     def __setitem__(cls, item, value):
@@ -63,23 +64,13 @@ class EnumMeta(type):
 
     def __call__(cls, element: str):
         if element not in cls:
-            raise KeyError(f"Cannot find '{element}' in '{cls}'!")
+            raise EnumError(f"Cannot find '{element}' in '{cls}'!")
         return getattr(cls, element)
-
-    @staticmethod
-    def __check_enum(enum) -> None:
-        if not hasattr(enum, "values"):
-            raise EnumError("Enums need to inherit from Enum (not EnumMeta)!")
 
     @property
     def values(cls) -> list:
         """Returns all enum elements as a list"""
-
-        elements = []
-        for name, value in cls.__dict__.items():
-            if not name.startswith("__") and type(value) != list:
-                elements.append(value)
-        return elements
+        return [value for name, value in vars(cls).items() if not name.startswith("__") and name != "values"]
 
 
 class Enum(metaclass=EnumMeta):
