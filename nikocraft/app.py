@@ -6,12 +6,9 @@ import logging
 import os
 import sys
 
-# External modules
-
 # Local modules
 from .constants import *
 from .utils import time
-from .utils import file
 from .utils import log
 
 
@@ -45,10 +42,10 @@ class App(ABC):
 
         # Setup logging
         log.setup_log_directory(self.log_path)
-        self.head = f"{self.name.upper()}\n{'-' * len(self.name)}\n\n{self.short_description}\n\nDESCRIPTION\n{self.description}\n\n" \
-                    f"DETAILS\nVersion: {self.version}\nAuthor: {self.author}\nFramework: Nikocraft (v{VERSION})\n{self.details}\n"
+        self.head: str = f"{self.name.upper()}\n{'-' * len(self.name)}\n\n{self.short_description}\n\nDESCRIPTION\n{self.description}\n\n" \
+                         f"DETAILS\nVersion: {self.version}\nAuthor: {self.author}\nFramework: Nikocraft (v{VERSION})\n{self.details}\n"
         log.setup_log_file(self.log_file, self.head)
-        self.logger = log.create_logger(self.log_file, self.name.upper(), logging.DEBUG if self.debug else logging.INFO, log_thread=log_thread, log_date=log_date)
+        self.logger: logging.Logger = log.create_logger(self.log_file, self.name.upper(), logging.DEBUG if self.debug else logging.INFO, log_thread=log_thread, log_date=log_date)
 
         # Log runtime information
         self.logger.info(f"Debug Mode: {'On' if self.debug else 'Off'}")

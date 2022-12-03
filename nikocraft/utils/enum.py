@@ -50,6 +50,9 @@ class EnumMeta(type):
     def __iter__(cls):
         return iter(getattr(cls, "values"))
 
+    def __reversed__(cls):
+        return reversed(getattr(cls, "values"))
+
     def __len__(cls):
         return len(getattr(cls, "values"))
 

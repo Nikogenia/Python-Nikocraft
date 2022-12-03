@@ -4,6 +4,7 @@
 from abc import ABC
 import os
 import ctypes
+import logging
 
 # External modules
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = ""
@@ -44,15 +45,19 @@ class Window(ABC):
     # PROPERTIES
 
     @property
-    def width(self):
+    def logger(self) -> logging.Logger:
+        return self.app.logger
+
+    @property
+    def width(self) -> int:
         return self.screen.get_width()
 
     @property
-    def height(self):
+    def height(self) -> int:
         return self.screen.get_height()
 
     @property
-    def dimension(self):
+    def dimension(self) -> Vec:
         return Vec(self.screen.get_width(), self.screen.get_height())
 
     # METHODS
