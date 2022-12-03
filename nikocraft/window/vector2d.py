@@ -11,6 +11,8 @@ class Vec(tuple):
     def __new__(cls, x: Union[int, float], y: Union[int, float]) -> Self:
         return tuple.__new__(cls, (x, y))
 
+    # PROPERTIES
+
     @property
     def x(self) -> Union[int, float]:
         return self[0]
@@ -51,6 +53,8 @@ class Vec(tuple):
     def length_squared(self) -> float:
         return self[0] ** 2 + self[1] ** 2
 
+    # METHODS
+
     def list(self) -> list[Union[int, float]]:
         """Create a list with the x and y values as elements"""
         return [*self]
@@ -84,6 +88,8 @@ class Vec(tuple):
     def ceil(self) -> Self:
         """Ceil the vector to a vector with integer values"""
         return self.__ceil__()
+
+    # OVERLOADS
 
     def __eq__(self, other: Self) -> bool:
         return self[0] == other[0] and self[1] == other[1]

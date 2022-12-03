@@ -27,7 +27,7 @@ def setup_log_directory(path: str, file_limit: int = 10) -> None:
                 log_files.append(entry)
     if len(log_files) > file_limit:
         for i in range(file_limit, len(log_files)):
-            os.remove(file.join(path, log_files[i - file_limit]))
+            file.delete(file.join(path, log_files[i - file_limit]))
 
 
 def setup_log_file(path: str, head: str, print_head: bool = True) -> None:

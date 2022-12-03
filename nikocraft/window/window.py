@@ -1,7 +1,7 @@
 """Contains the window class for GUI management"""
 
 # Standard modules
-from abc import ABC, abstractmethod
+from abc import ABC
 import os
 import ctypes
 
@@ -41,6 +41,8 @@ class Window(ABC):
         # Set initialized flag
         self._initialized = True
 
+    # PROPERTIES
+
     @property
     def width(self):
         return self.screen.get_width()
@@ -52,6 +54,8 @@ class Window(ABC):
     @property
     def dimension(self):
         return Vec(self.screen.get_width(), self.screen.get_height())
+
+    # METHODS
 
     def open(self) -> None:
         """Open the window
@@ -88,7 +92,8 @@ class Window(ABC):
         self.quit()
         pg.quit()
 
-    @abstractmethod
+    # ABSTRACT METHODS
+
     def init(self) -> None:
         """Startup tasks
 
@@ -98,7 +103,6 @@ class Window(ABC):
 
         pass
 
-    @abstractmethod
     def event(self, event: pg.event.Event) -> None:
         """Handle pygame event
 
@@ -107,7 +111,6 @@ class Window(ABC):
 
         pass
 
-    @abstractmethod
     def render(self) -> None:
         """Render screen
 
@@ -116,7 +119,6 @@ class Window(ABC):
 
         pass
 
-    @abstractmethod
     def quit(self) -> None:
         """Shutdown tasks
 
@@ -125,6 +127,8 @@ class Window(ABC):
         """
 
         pass
+
+    # STATIC METHODS
 
     @staticmethod
     def disable_resolution_scaling() -> None:

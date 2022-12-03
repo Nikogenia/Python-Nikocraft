@@ -16,6 +16,8 @@ class RGBColor(tuple):
     def __new__(cls, red: int, green: int, blue: int) -> Self:
         return tuple.__new__(cls, (round(red), round(green), round(blue)))
 
+    # PROPERTIES
+
     @property
     def red(self) -> int:
         return self[0]
@@ -32,10 +34,14 @@ class RGBColor(tuple):
     def hex(self) -> str:
         return '#%02x%02x%02x' % self
 
+    # CLASS METHODS
+
     @classmethod
     def from_hex(cls, value: str) -> Self:
         value = value.replace("#", "")
         return RGBColor(*(int(value[i:i+2], 16) for i in (0, 2, 4)))
+
+    # METHODS
 
     def list(self) -> list[int]:
         """Create a list with the red, green and blue values as elements"""
@@ -58,6 +64,8 @@ class RGBColor(tuple):
     def mix(self, color: Self) -> Self:
         """Mix two RGB colors"""
         return ((self + color) * 0.5).clamp()
+
+    # OVERLOADS
 
     def __eq__(self, other: Self) -> bool:
         return self[0] == other[0] and self[1] == other[1] and self[2] == other[2]

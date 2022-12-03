@@ -32,6 +32,8 @@ class Clock:
         # Manipulation
         self.speed_factor: float = 1
 
+    # PROPERTIES
+
     @property
     def real_fps(self) -> float:
         return round(self.limiter.get_fps(), 5)
@@ -39,6 +41,8 @@ class Clock:
     @property
     def available_fps(self) -> float:
         return round(1 / self.frame_duration, 5)
+
+    # METHODS
 
     def tick(self, max_fps: int = None) -> None:
         """Next frame (Calculates statistics and delta time and waits until the next frame should be calculated)"""
@@ -66,6 +70,8 @@ class Clock:
         # Statistics
         self.frame_count += 1
         self.frame_start: float = time.bench_time()
+
+    # OVERLOADS
 
     def __repr__(self) -> str:
         return f"Clock[id={id(self)}, real_fps={self.real_fps}, available_fps={self.available_fps}, max_fps={self.max_fps}, speed_factor={self.speed_factor}, frame_count={self.frame_count}]"

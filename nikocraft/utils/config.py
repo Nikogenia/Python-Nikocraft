@@ -2,7 +2,7 @@
 
 # Standard modules
 from typing import Any
-from abc import ABC, abstractmethod
+from abc import ABC
 from logging import Logger
 
 # Local modules
@@ -16,6 +16,8 @@ class Config(ABC):
 
         self.path: str = path
         self.logger: Logger = logger
+
+    # METHODS
 
     def load(self) -> None:
         """Load data from JSON file at path"""
@@ -57,7 +59,8 @@ class Config(ABC):
             self.logger.debug(f"Save configuration file at '{self.path}' ...")
         file.save_json(self.path, data, self.logger)
 
-    @abstractmethod
+    # ABSTRACT METHODS
+
     def load_attribute(self, attribute: str, data: dict) -> Any | None:
         """Load an attribute from data (Return result or None for automatic loading)
 
@@ -67,7 +70,6 @@ class Config(ABC):
 
         pass
 
-    @abstractmethod
     def save_attribute(self, attribute: str, value: Any, data: dict) -> Any | None:
         """Save an attribute to data (Modify data or return None for automatic saving)
 
@@ -77,7 +79,6 @@ class Config(ABC):
 
         pass
 
-    @abstractmethod
     def load_extras(self, data: dict) -> None:
         """Additional loading tasks
 
@@ -85,13 +86,18 @@ class Config(ABC):
         Don't call this method manually*
         """
 
-    @abstractmethod
+        pass
+
     def save_extras(self, data: dict) -> None:
         """Additional saving tasks
 
         *Called on saving -
         Don't call this method manually*
         """
+
+        pass
+
+    # OVERLOADS
 
     def __repr__(self) -> str:
         return f"Config[id={id(self)}, path={self.path}]"

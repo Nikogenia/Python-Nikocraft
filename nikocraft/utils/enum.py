@@ -29,6 +29,8 @@ class EnumMeta(type):
         delattr(__enum, "__build__")
         return __enum
 
+    # OVERLOADS
+
     def __setattr__(cls, key, value):
         if "__build__" not in vars(cls):
             raise EnumError("Changing enum elements is not allowed!")
@@ -66,6 +68,8 @@ class EnumMeta(type):
         if element not in cls:
             raise EnumError(f"Cannot find '{element}' in '{cls}'!")
         return getattr(cls, element)
+
+    # PROPERTIES
 
     @property
     def values(cls) -> list:

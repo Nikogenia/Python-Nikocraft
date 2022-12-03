@@ -57,6 +57,8 @@ class App(ABC):
         # Set initialized flag
         self._initialized: bool = True
 
+    # METHODS
+
     def start(self) -> int:
         """Start the application
 
@@ -73,6 +75,8 @@ class App(ABC):
         self.quit()
         return self.exit_code
 
+    # ABSTRACT METHODS
+
     @abstractmethod
     def run(self) -> None:
         """Application execution
@@ -83,7 +87,6 @@ class App(ABC):
 
         pass
 
-    @abstractmethod
     def quit(self) -> None:
         """Shutdown tasks
 
