@@ -15,6 +15,7 @@ from ..constants import *
 from ..app import App
 from .vector2d import Vec
 from .clock import Clock
+from .font import FontManager
 
 
 class Window(ABC):
@@ -38,6 +39,9 @@ class Window(ABC):
 
         # Initialize pygame
         pg.init()
+
+        # Initialize font manager
+        self.font: FontManager = FontManager()
 
         # Set initialized flag
         self._initialized = True

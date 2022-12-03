@@ -4,11 +4,10 @@
 # Python cache files
 __pycache__
 
-# Test file
+# Testing
 test*
-
-# Log files
 logs
+resources
 
 # Build files
 build

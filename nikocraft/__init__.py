@@ -20,6 +20,8 @@ from .window.vector3d import Vec3
 from .window.rgb import RGB
 from .window.rgb import RGBColor
 from .window.clock import Clock
+from .window.renderer import Renderer
+from .window.debug_screen import DebugScreen
 
 # Constants
 from .constants import AUTHOR, VERSION
@@ -37,6 +39,8 @@ __all__ = [
     "RGB",
     "RGBColor",
     "Clock",
+    "Renderer",
+    "DebugScreen",
     "AUTHOR",
     "VERSION"
 ]
