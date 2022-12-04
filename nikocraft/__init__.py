@@ -22,6 +22,7 @@ from .window.rgb import RGBColor
 from .window.clock import Clock
 from .window.renderer import Renderer
 from .window.debug_screen import DebugScreen
+from .window.event_hook import EventHook
 
 # Constants
 from .constants import AUTHOR, VERSION
@@ -41,6 +42,7 @@ __all__ = [
     "Clock",
     "Renderer",
     "DebugScreen",
+    "EventHook",
     "AUTHOR",
     "VERSION"
 ]

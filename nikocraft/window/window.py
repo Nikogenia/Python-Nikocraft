@@ -1,6 +1,7 @@
 """Contains the window class for GUI management"""
 
 # Standard modules
+from typing import Callable, Self
 from abc import ABC
 import os
 import ctypes
@@ -16,6 +17,7 @@ from ..app import App
 from .vector2d import Vec
 from .clock import Clock
 from .font import FontManager
+from .event_hook import EventHook
 
 
 class Window(ABC):
@@ -42,6 +44,9 @@ class Window(ABC):
 
         # Initialize font manager
         self.font: FontManager = FontManager()
+
+        # Event hooks
+        self.event_hooks: list[EventHook] = []
 
         # Set initialized flag
         self._initialized = True
@@ -88,7 +93,19 @@ class Window(ABC):
 
             # Event handling
             for event in pg.event.get():
+
+                # Window event handler
                 self.event(event)
+
+                # Event hooks
+                for hook in self.event_hooks:
+                    for event_type in hook.events:
+                        if event.type == event_type:
+                            for handler in hook.handlers:
+                                handler(event, self, hook.data)
+                            break
+
+                # Default event handlers
                 if event.type == pg.QUIT and self.option_auto_quit:
                     self.running = False
 
@@ -100,6 +117,22 @@ class Window(ABC):
         # Shutdown
         self.quit()
         pg.quit()
+
+    def add_event_hook(self, name: str, event: int | tuple[int, ...], handler: tuple[Callable[[pg.event.Event, Self, dict], None], ...] |
+                       Callable[[pg.event.Event, Self, dict], None], data: dict = None) -> EventHook:
+        """Add a new event hook"""
+        hook = EventHook(name, event if isinstance(event, tuple) else (event,),
+                         handler if isinstance(handler, tuple) else (handler,), data if data is not None else {})
+        self.event_hooks.append(hook)
+        return hook
+
+    def remove_event_hook(self, name: str) -> bool:
+        """Remove a event hook"""
+        for hook in self.event_hooks:
+            if hook.name == name:
+                self.event_hooks.remove(hook)
+                return True
+        return False
 
     # ABSTRACT METHODS
 
