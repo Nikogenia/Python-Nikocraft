@@ -2,7 +2,6 @@
 
 # Standard modules
 from typing import Callable, Self
-from abc import ABC
 import os
 import ctypes
 import logging
@@ -21,7 +20,7 @@ from .font import FontManager
 from .event_hook import EventHook
 
 
-class Window(ABC):
+class Window:
     """Window class for the GUI management"""
 
     _initialized = False

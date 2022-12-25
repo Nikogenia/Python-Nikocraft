@@ -1,4 +1,12 @@
-"""Setup Script"""
+"""Setup Script
+
+Building
+python setup.py sdist bdist_wheel
+
+Publishing
+twine upload dist/*
+
+"""
 
 from setuptools import setup, find_packages
 import pathlib
