@@ -30,19 +30,6 @@ class Renderer(ABC):
     def dimension(self) -> Vec:
         return Vec(self.surface.get_width(), self.surface.get_height())
 
-    # METHODS
-
-    def change(self, surface: pg.Surface) -> None:
-        """Change the current surface"""
-        self.surface = surface
-
-    # CLASS METHODS
-
-    @classmethod
-    def cached(cls, width: int, height: int) -> Self:
-        """Create a renderer with a new surface"""
-        return cls(pg.Surface((width, height)))
-
     # ABSTRACT METHODS
 
     @abstractmethod

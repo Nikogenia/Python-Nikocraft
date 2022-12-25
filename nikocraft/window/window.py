@@ -14,6 +14,7 @@ import pygame as pg
 # Local modules
 from ..constants import *
 from ..app import App
+from ..utils import time
 from .vector2d import Vec
 from .clock import Clock
 from .font import FontManager
@@ -38,6 +39,11 @@ class Window(ABC):
         self.flags: int = 0
         self.option_auto_update_screen: bool = True
         self.option_auto_quit: bool = True
+
+        # Statistics
+        self.stat_event_time: float = 0
+        self.stat_render_time: float = 0
+        self.stat_other_time: float = 0
 
         # Initialize pygame
         pg.init()
@@ -82,6 +88,7 @@ class Window(ABC):
 
         # Open window
         self.screen: pg.Surface = pg.display.set_mode(self.target_dimension, self.flags)
+        pg.event.post(pg.event.Event(SCREEN_UPDATE_EVENT))
         self.init()
 
         # Window loop
@@ -92,27 +99,34 @@ class Window(ABC):
             self.clock.tick()
 
             # Event handling
-            for event in pg.event.get():
+            with time.benchmark(lambda result: setattr(self, "stat_event_time", result)):
+                for event in pg.event.get():
 
-                # Window event handler
-                self.event(event)
+                    # Window event handler
+                    self.event(event)
 
-                # Event hooks
-                for hook in self.event_hooks:
-                    for event_type in hook.events:
-                        if event.type == event_type:
-                            for handler in hook.handlers:
-                                handler(event, self, hook.data)
-                            break
+                    # Event hooks
+                    for hook in self.event_hooks:
+                        for event_type in hook.events:
+                            if event.type == event_type:
+                                for handler in hook.handlers:
+                                    handler(event, self, hook.data)
+                                break
 
-                # Default event handlers
-                if event.type == pg.QUIT and self.option_auto_quit:
-                    self.running = False
+                    # Default event handlers
+                    if event.type == pg.QUIT and self.option_auto_quit:
+                        self.running = False
 
             # Screen rendering
-            self.render()
-            if self.option_auto_update_screen:
-                pg.display.flip()
+            with time.benchmark(lambda result: setattr(self, "stat_render_time", result)):
+                self.render()
+                if self.option_auto_update_screen:
+                    pg.display.flip()
+
+            # Statistics
+            self.stat_other_time: float = self.clock.frame_durations[-1] - self.stat_event_time - self.stat_render_time
+            if self.stat_other_time < 0:
+                self.stat_other_time = 0
 
         # Shutdown
         self.quit()

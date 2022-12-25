@@ -44,6 +44,10 @@ class RGBColor(tuple):
 
     # METHODS
 
+    def rgba(self, value: int) -> tuple[int, int, int, int]:
+        """Get a RGBA color tuple"""
+        return self[0], self[1], self[2], value
+
     def list(self) -> list[int]:
         """Create a list with the red, green and blue values as elements"""
         return [*self]

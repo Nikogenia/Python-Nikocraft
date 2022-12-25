@@ -3,6 +3,8 @@
 # Standard modules
 import time as _time
 import datetime as _datetime
+from contextlib import contextmanager
+from typing import Callable
 
 
 def wait(duration: float) -> None:
@@ -68,3 +70,12 @@ def datetime_f_ymd_hms() -> str:
 def datetime_f(datetime_format: str) -> str:
     """Get the datetime as a string in a custom format"""
     return _datetime.datetime.now().strftime(datetime_format)
+
+
+@contextmanager
+def benchmark(result: Callable[[float], None]) -> None:
+    """A context manager for benchmarking"""
+    start = bench_time()
+    yield
+    end = bench_time()
+    result(end - start)

@@ -26,6 +26,7 @@ class Clock:
         self.last_update: float = 0
 
         # Delta time
+        self.delta_time_raw: float = 0
         self.delta_time: float = 0
         self.last_time: float = 0
 
@@ -63,9 +64,9 @@ class Clock:
         self.limiter.tick(self.max_fps)
 
         # Delta time
-        self.delta_time: float = time.bench_time() - self.last_time
+        self.delta_time_raw: float = time.bench_time() - self.last_time
         self.last_time: float = time.bench_time()
-        self.delta_time *= self.max_fps * self.speed_factor
+        self.delta_time = self.delta_time_raw * self.max_fps * self.speed_factor
 
         # Statistics
         self.frame_count += 1

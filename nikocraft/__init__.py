@@ -25,7 +25,7 @@ from .window.debug_screen import DebugScreen
 from .window.event_hook import EventHook
 
 # Constants
-from .constants import AUTHOR, VERSION
+from .constants import AUTHOR, VERSION, SCREEN_UPDATE_EVENT
 
 __all__ = [
     "time",
@@ -44,5 +44,6 @@ __all__ = [
     "DebugScreen",
     "EventHook",
     "AUTHOR",
-    "VERSION"
+    "VERSION",
+    "SCREEN_UPDATE_EVENT"
 ]
