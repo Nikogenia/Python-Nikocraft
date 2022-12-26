@@ -25,24 +25,32 @@ class Window:
 
     _initialized = False
 
-    def __init__(self, app: App) -> None:
+    def __init__(self, app: App, *, fps: int = DEFAULT_FPS,
+                 width: int = DEFAULT_WIDTH, height: int = DEFAULT_HEIGHT,
+                 flags: int = 0, auto_update_screen: bool = True, auto_quit: bool = True) -> None:
 
         # App
         self.app = app
 
         # General information
         self.screen: pg.Surface = pg.Surface((0, 0))
-        self.target_dimension: Vec = Vec(DEFAULT_WIDTH, DEFAULT_HEIGHT)
+        self.target_dimension: Vec = Vec(width, height)
         self.running: bool = False
-        self.clock: Clock = Clock(DEFAULT_FPS)
-        self.flags: int = 0
-        self.option_auto_update_screen: bool = True
-        self.option_auto_quit: bool = True
+        self.clock: Clock = Clock(fps)
+        self.flags: int = flags
+        self.auto_update_screen: bool = auto_update_screen
+        self.auto_quit: bool = auto_quit
 
         # Statistics
         self.stat_event_time: float = 0
         self.stat_render_time: float = 0
+        self.stat_e_update_time: float = 0
+        self.stat_update_time: float = 0
+        self.stat_l_update_time: float = 0
         self.stat_other_time: float = 0
+
+        # Scene management
+        self.scene_mode: bool = False
 
         # Initialize pygame
         pg.init()
@@ -97,6 +105,10 @@ class Window:
             # Clock tick
             self.clock.tick()
 
+            # Early update
+            with time.benchmark(lambda result: setattr(self, "stat_e_update_time", result)):
+                self.early_update()
+
             # Event handling
             with time.benchmark(lambda result: setattr(self, "stat_event_time", result)):
                 for event in pg.event.get():
@@ -113,19 +125,22 @@ class Window:
                                 break
 
                     # Default event handlers
-                    if event.type == pg.QUIT and self.option_auto_quit:
+                    if event.type == pg.QUIT and self.auto_quit:
                         self.running = False
+
+            # Update
+            with time.benchmark(lambda result: setattr(self, "stat_update_time", result)):
+                self.update()
 
             # Screen rendering
             with time.benchmark(lambda result: setattr(self, "stat_render_time", result)):
                 self.render()
-                if self.option_auto_update_screen:
+                if self.auto_update_screen:
                     pg.display.flip()
 
-            # Statistics
-            self.stat_other_time: float = self.clock.frame_durations[-1] - self.stat_event_time - self.stat_render_time
-            if self.stat_other_time < 0:
-                self.stat_other_time = 0
+            # Late update
+            with time.benchmark(lambda result: setattr(self, "stat_l_update_time", result)):
+                self.late_update()
 
         # Shutdown
         self.quit()
@@ -170,6 +185,30 @@ class Window:
         """Render screen
 
         *Called every frame*
+        """
+
+        pass
+
+    def early_update(self) -> None:
+        """Early update tasks
+
+        *Called every frame before event handling*
+        """
+
+        pass
+
+    def update(self) -> None:
+        """Normal update tasks
+
+        *Called every frame before rendering*
+        """
+
+        pass
+
+    def late_update(self) -> None:
+        """Late update tasks
+
+        *Called every frame after rendering*
         """
 
         pass

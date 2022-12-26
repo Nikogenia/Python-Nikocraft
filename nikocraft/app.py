@@ -1,7 +1,6 @@
 """Contains the main class of the application"""
 
 # Standard modules
-from abc import ABC, abstractmethod
 import logging
 import os
 import sys
@@ -12,7 +11,7 @@ from .utils import time
 from .utils import log
 
 
-class App(ABC):
+class App:
     """Main class of the application"""
 
     _initialized = False
@@ -74,7 +73,6 @@ class App(ABC):
 
     # ABSTRACT METHODS
 
-    @abstractmethod
     def run(self) -> None:
         """Application execution
 

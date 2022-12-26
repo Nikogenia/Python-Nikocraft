@@ -24,7 +24,7 @@ class Config(ABC):
 
         # Load file
         if self.logger:
-            self.logger.debug(f"Load configuration file at '{self.path}' ...")
+            self.logger.info(f"Load configuration file at '{self.path}' ...")
         data = file.load_json(self.path, self.logger, create=False)
 
         # Decode data
@@ -46,7 +46,7 @@ class Config(ABC):
         # Encode data
         data = {}
         if self.logger:
-            self.logger.debug("Encode configuration attributes ...")
+            self.logger.info("Encode configuration attributes ...")
         for attribute in vars(self):
             if attribute in ("path", "logger"):
                 continue

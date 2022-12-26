@@ -1,7 +1,3 @@
-# Standard modules
-from abc import ABC, abstractmethod
-from typing import Self
-
 # External modules
 import pygame as pg
 
@@ -9,7 +5,7 @@ import pygame as pg
 from .vector2d import Vec
 
 
-class Renderer(ABC):
+class Renderer:
     """Pygame surface renderer class"""
     
     def __init__(self, surface: pg.Surface) -> None:
@@ -32,7 +28,6 @@ class Renderer(ABC):
 
     # ABSTRACT METHODS
 
-    @abstractmethod
     def render(self) -> None:
         """Render the surface
 
