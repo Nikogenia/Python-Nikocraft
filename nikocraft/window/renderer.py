@@ -29,9 +29,11 @@ class Renderer:
     # ABSTRACT METHODS
 
     def render(self) -> None:
-        """Render the surface
+        """Render the surface"""
 
-        *Returns nothing*
-        """
+        pass
+
+    def update(self) -> None:
+        """Update tasks"""
 
         pass

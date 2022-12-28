@@ -1,6 +1,3 @@
-# External modules
-import pygame as pg
-
 # Local modules
 from ..constants import SCREEN_UPDATE_EVENT
 from .window import Window

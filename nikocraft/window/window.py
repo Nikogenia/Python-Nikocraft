@@ -18,6 +18,7 @@ from .vector2d import Vec
 from .clock import Clock
 from .font import FontManager
 from .event_hook import EventHook
+from .scene import Scene
 
 
 class Window:
@@ -27,19 +28,26 @@ class Window:
 
     def __init__(self, app: App, *, fps: int = DEFAULT_FPS,
                  width: int = DEFAULT_WIDTH, height: int = DEFAULT_HEIGHT,
-                 flags: int = 0, auto_update_screen: bool = True, auto_quit: bool = True) -> None:
+                 flags: int = 0, auto_update_screen: bool = True, auto_quit: bool = True,
+                 scene_mode: bool = False, screen_resize: tuple[int, int] = None) -> None:
 
         # App
         self.app = app
 
+        # Initialize
+        self.logger.info("Initialize window ...")
+
         # General information
         self.screen: pg.Surface = pg.Surface((0, 0))
+        self.screen_id: int = id(self.screen)
+        self.screen_raw: pg.Surface | None = None
         self.target_dimension: Vec = Vec(width, height)
         self.running: bool = False
         self.clock: Clock = Clock(fps)
         self.flags: int = flags
         self.auto_update_screen: bool = auto_update_screen
         self.auto_quit: bool = auto_quit
+        self.screen_resize: Vec | None = Vec(*screen_resize) if screen_resize else None
 
         # Statistics
         self.stat_event_time: float = 0
@@ -50,7 +58,14 @@ class Window:
         self.stat_other_time: float = 0
 
         # Scene management
-        self.scene_mode: bool = False
+        self.scene_mode: bool = scene_mode
+        self.scene: Scene | None = None
+        self.last_scene: Scene | None = None
+        self.next_scene_name: str = ""
+        self.next_scene_args: dict = {}
+        self.transition: Transition = Transition.INSTANT
+        self.transition_data: dict = {}
+        self.scenes: dict[str, type] = {}
 
         # Initialize pygame
         pg.init()
@@ -82,6 +97,10 @@ class Window:
     def dimension(self) -> Vec:
         return Vec(self.screen.get_width(), self.screen.get_height())
 
+    @property
+    def dt(self) -> float:
+        return self.clock.delta_time
+
     # METHODS
 
     def open(self) -> None:
@@ -94,7 +113,9 @@ class Window:
         assert self._initialized, "Window was not initialized!"
 
         # Open window
+        self.logger.info("Open window ...")
         self.screen: pg.Surface = pg.display.set_mode(self.target_dimension, self.flags)
+        self.screen_id: int = id(self.screen)
         pg.event.post(pg.event.Event(SCREEN_UPDATE_EVENT))
         self.init()
 
@@ -108,6 +129,10 @@ class Window:
             # Early update
             with time.benchmark(lambda result: setattr(self, "stat_e_update_time", result)):
                 self.early_update()
+                if self.scene_mode:
+                    self.scene.early_update()
+                    if self.last_scene:
+                        self.last_scene.early_update()
 
             # Event handling
             with time.benchmark(lambda result: setattr(self, "stat_event_time", result)):
@@ -116,13 +141,17 @@ class Window:
                     # Window event handler
                     self.event(event)
 
+                    # Scene event handler
+                    if self.scene_mode:
+                        self.scene.event(event)
+                        if self.last_scene:
+                            self.last_scene.event(event)
+
                     # Event hooks
                     for hook in self.event_hooks:
-                        for event_type in hook.events:
-                            if event.type == event_type:
-                                for handler in hook.handlers:
-                                    handler(event, self, hook.data)
-                                break
+                        if event.type in hook.events:
+                            for handler in hook.handlers:
+                                handler(event, self, hook.data)
 
                     # Default event handlers
                     if event.type == pg.QUIT and self.auto_quit:
@@ -131,6 +160,10 @@ class Window:
             # Update
             with time.benchmark(lambda result: setattr(self, "stat_update_time", result)):
                 self.update()
+                if self.scene_mode:
+                    self.scene.update()
+                    if self.last_scene:
+                        self.last_scene.update()
 
             # Screen rendering
             with time.benchmark(lambda result: setattr(self, "stat_render_time", result)):
@@ -141,8 +174,27 @@ class Window:
             # Late update
             with time.benchmark(lambda result: setattr(self, "stat_l_update_time", result)):
                 self.late_update()
+                if self.scene_mode:
+                    self.scene.late_update()
+                    if self.last_scene:
+                        self.last_scene.late_update()
+
+            # Scene changing
+            if self.next_scene_name != "":
+                self.last_scene: Scene | None = self.scene
+                self.scene: Scene | None = self.scenes[self.next_scene_name](self, self.next_scene_args)
+                self.scene.init()
+
+            # Transition updating
+            # TODO: Transition updating
+
+            # Screen update event
+            if id(self.screen) != self.screen_id:
+                pg.event.post(pg.event.Event(SCREEN_UPDATE_EVENT))
+                self.screen_id: int = id(self.screen)
 
         # Shutdown
+        self.logger.info("Close window ...")
         self.quit()
         pg.quit()
 
@@ -161,6 +213,21 @@ class Window:
                 self.event_hooks.remove(hook)
                 return True
         return False
+
+    def change_scene(self, name: str, args: dict, transition: Transition) -> None:
+        """Change the scene"""
+        self.next_scene_name = name
+        self.next_scene_args = args
+        self.transition = transition
+
+    def register_scene(self, name: str, scene_class: type) -> None:
+        """Register a new scene"""
+        self.scenes[name] = scene_class
+
+    def render_scene(self) -> None:
+        """Render the scene and transition"""
+        # TODO: Scene rendering
+        self.scene.render()
 
     # ABSTRACT METHODS
 

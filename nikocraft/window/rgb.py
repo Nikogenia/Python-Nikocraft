@@ -39,7 +39,7 @@ class RGBColor(tuple):
     @classmethod
     def from_hex(cls, value: str) -> Self:
         """Convert a hex color string to RGB"""
-        value = value.replace("#", "")
+        value = value.replace("#", "").replace("0x", "")
         return RGBColor(*(int(value[i:i+2], 16) for i in (0, 2, 4)))
 
     # METHODS

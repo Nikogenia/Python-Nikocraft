@@ -1,26 +1,35 @@
 # Standard modules
+from __future__ import annotations
+from typing import TYPE_CHECKING
 import logging
 
 # External modules
 import pygame as pg
 
 # Local modules
-from .window import Window
+if TYPE_CHECKING:
+    from .window import Window
 from .vector2d import Vec
 
 
 class Scene:
-    """Scene"""
+    """Scene class"""
 
-    def __init__(self, window: Window):
+    def __init__(self, window: Window, args: dict = None) -> None:
 
+        # Window and arguments
         self.window: Window = window
+        self.args: dict = {} if args is None else args
+
+        # Screen cache system
+        self.screen_cache: bool = False
+        self._screen: pg.Surface | None = None
 
     # PROPERTIES
 
     @property
     def screen(self) -> pg.Surface:
-        return self.window.screen
+        return self._screen if self.screen_cache else self.window.screen
 
     @property
     def logger(self) -> logging.Logger:
@@ -37,6 +46,10 @@ class Scene:
     @property
     def dimension(self) -> Vec:
         return Vec(self.window.screen.get_width(), self.window.screen.get_height())
+
+    @property
+    def dt(self) -> float:
+        return self.window.clock.delta_time
 
     # ABSTRACT METHODS
 

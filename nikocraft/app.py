@@ -65,9 +65,11 @@ class App:
         assert self._initialized, "Application was not initialized!"
 
         # Run application
+        self.logger.info("Start application ...")
         self.run()
 
         # Shutdown tasks
+        self.logger.info("Quit application ...")
         self.quit()
         return self.exit_code
 

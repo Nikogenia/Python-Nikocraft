@@ -46,7 +46,7 @@ class Config(ABC):
         # Encode data
         data = {}
         if self.logger:
-            self.logger.info("Encode configuration attributes ...")
+            self.logger.debug("Encode configuration attributes ...")
         for attribute in vars(self):
             if attribute in ("path", "logger"):
                 continue
@@ -56,7 +56,7 @@ class Config(ABC):
 
         # Save file
         if self.logger:
-            self.logger.debug(f"Save configuration file at '{self.path}' ...")
+            self.logger.info(f"Save configuration file at '{self.path}' ...")
         file.save_json(self.path, data, self.logger)
 
     # ABSTRACT METHODS
