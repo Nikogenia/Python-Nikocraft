@@ -23,9 +23,10 @@ from .window.clock import Clock
 from .window.renderer import Renderer
 from .window.debug_screen import DebugScreen
 from .window.event_hook import EventHook
+from .window.scene import Scene
 
 # Constants
-from .constants import AUTHOR, VERSION, SCREEN_UPDATE_EVENT
+from .constants import AUTHOR, VERSION, CUSTOM_EVENT, SCREEN_UPDATE_EVENT, Transition
 
 __all__ = [
     "time",
@@ -43,7 +44,10 @@ __all__ = [
     "Renderer",
     "DebugScreen",
     "EventHook",
+    "Scene",
     "AUTHOR",
     "VERSION",
-    "SCREEN_UPDATE_EVENT"
+    "CUSTOM_EVENT",
+    "SCREEN_UPDATE_EVENT",
+    "Transition"
 ]

@@ -9,7 +9,8 @@ class DebugScreen(Renderer):
     """Renderer class for a debug screen"""
     
     def __init__(self, window: Window, color: RGBColor = RGB.WHITE,
-                 font_name: str = "calibri", font_system: bool = True) -> None:
+                 font_name: str = "calibri", font_system: bool = True,
+                 font_size: int = 25, font_antialias: bool = True) -> None:
 
         super(DebugScreen, self).__init__(window.screen)
 
@@ -17,21 +18,45 @@ class DebugScreen(Renderer):
         self.color: RGBColor = color
         self.font_name: str = font_name
         self.font_system: bool = font_system
+        self.font_size: int = font_size
+        self.font_antialias: bool = font_antialias
 
         self.window.add_event_hook(f"Debug Screen - {id(self)}", SCREEN_UPDATE_EVENT,
                                    lambda *args: setattr(self, "surface", self.window.screen))
 
-    def render(self) -> None:
+    def render(self, left_content: list[str] = None) -> None:
 
-        font = self.window.font.get(self.font_name, 25, self.font_system)
+        font = self.window.font.get(self.font_name, self.font_size, self.font_system)
+        height = font.get_height()
 
-        self.surface.blit(font.render(f"{self.window.app.name}   v{self.window.app.version}   (by {self.window.app.author})", True, self.color), (0, 0))
-        self.surface.blit(font.render(f"FPS: {self.window.clock.available_fps:.3f} ({self.window.clock.real_fps:.3f})", True, self.color), (0, 35))
-        self.surface.blit(font.render(f"Delta Time: {self.window.clock.delta_time_raw*1000:.1f} ms ({self.window.clock.delta_time:.3f})", True, self.color), (0, 60))
-        self.surface.blit(font.render(f"Timings: {self.window.clock.frame_durations[-1]*1000:.2f} ms", True, self.color), (0, 85))
-        self.surface.blit(font.render(f"   Event: {self.window.stat_event_time*1000:.2f} ms", True, self.color), (0, 110))
-        self.surface.blit(font.render(f"   Render: {self.window.stat_render_time*1000:.2f} ms", True, self.color), (0, 135))
-        self.surface.blit(font.render(f"   Update: {self.window.stat_update_time*1000:.2f} ms", True, self.color), (0, 160))
-        self.surface.blit(font.render(f"   Early Update: {self.window.stat_e_update_time*1000:.2f} ms", True, self.color), (0, 185))
-        self.surface.blit(font.render(f"   Late Update: {self.window.stat_l_update_time*1000:.2f} ms", True, self.color), (0, 210))
-        self.surface.blit(font.render(f"Screen: {self.window.width} x {self.window.height} px", True, self.color), (0, 245))
+        if left_content is None:
+            left_content = self.left_content()
+
+        y = 0
+        for line in left_content:
+            if line != "":
+                self.surface.blit(font.render(line, self.font_antialias, self.color), (0, y))
+                y += height
+            else:
+                y += 10
+
+    def left_content(self) -> list[str]:
+
+        win = self.window
+
+        return [
+            f"{win.app.name}   v{win.app.version}   (by {win.app.author})",
+            f"",
+            f"FPS: {win.clock.available_fps:.3f} ({win.clock.real_fps:.3f})",
+            f"Delta Time: {win.clock.delta_time_raw*1000:.1f} ms ({win.clock.delta_time:.3f})",
+            f"Timings: {win.clock.frame_durations[-1]*1000:.2f} ms",
+            f"   Event: {win.stat_event_time*1000:.2f} ms",
+            f"   Render: {win.stat_render_time*1000:.2f} ms",
+            f"   Update: {win.stat_update_time*1000:.2f} ms",
+            f"   Early Update: {win.stat_e_update_time*1000:.2f} ms",
+            f"   Late Update: {win.stat_l_update_time*1000:.2f} ms",
+            f"",
+            f"Screen: {win.width} x {win.height} px",
+            f"",
+            f"Scene: {type(win.scene).__name__ if win.scene_mode else '<off>'}"
+        ]
