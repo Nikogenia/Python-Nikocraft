@@ -1,18 +1,20 @@
+# External modules
+import pygame as pg
+
 # Local modules
-from ..constants import SCREEN_UPDATE_EVENT
 from .window import Window
-from .renderer import Renderer
+from .surface_interface import SurfaceInterface
 from .rgb import RGB, RGBColor
 
 
-class DebugScreen(Renderer):
+class DebugScreen(SurfaceInterface):
     """Renderer class for a debug screen"""
     
     def __init__(self, window: Window, color: RGBColor = RGB.WHITE,
                  font_name: str = "calibri", font_system: bool = True,
-                 font_size: int = 25, font_antialias: bool = True) -> None:
+                 font_size: int = 22, font_antialias: bool = True) -> None:
 
-        super(DebugScreen, self).__init__(window.screen)
+        super(DebugScreen, self).__init__("screen")
 
         self.window: Window = window
         self.color: RGBColor = color
@@ -21,8 +23,13 @@ class DebugScreen(Renderer):
         self.font_size: int = font_size
         self.font_antialias: bool = font_antialias
 
-        self.window.add_event_hook(f"Debug Screen - {id(self)}", SCREEN_UPDATE_EVENT,
-                                   lambda *args: setattr(self, "surface", self.window.screen))
+    # PROPERTIES
+
+    @property
+    def screen(self) -> pg.Surface:
+        return self.window.screen
+
+    # METHODS
 
     def render(self, left_content: list[str] = None) -> None:
 
@@ -35,7 +42,7 @@ class DebugScreen(Renderer):
         y = 0
         for line in left_content:
             if line != "":
-                self.surface.blit(font.render(line, self.font_antialias, self.color), (0, y))
+                self.screen.blit(font.render(line, self.font_antialias, self.color), (0, y))
                 y += height
             else:
                 y += 10

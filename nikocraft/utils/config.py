@@ -2,14 +2,13 @@
 
 # Standard modules
 from typing import Any
-from abc import ABC
 from logging import Logger
 
 # Local modules
-from ..utils import file
+from . import file
 
 
-class Config(ABC):
+class Config:
     """Config class for saving JSON configurations"""
 
     def __init__(self, path: str, logger: Logger = None) -> None:
@@ -39,6 +38,7 @@ class Config(ABC):
                     setattr(self, attribute, data[attribute])
             else:
                 setattr(self, attribute, result)
+        self.load_extras(data)
 
     def save(self) -> None:
         """Save data to JSON file at path"""
@@ -51,8 +51,9 @@ class Config(ABC):
             if attribute in ("path", "logger"):
                 continue
             result = self.save_attribute(attribute, getattr(self, attribute), data)
-            if result is None:
+            if not result:
                 data[attribute] = getattr(self, attribute)
+        self.save_extras(data)
 
         # Save file
         if self.logger:
@@ -70,8 +71,8 @@ class Config(ABC):
 
         pass
 
-    def save_attribute(self, attribute: str, value: Any, data: dict) -> Any | None:
-        """Save an attribute to data (Modify data or return None for automatic saving)
+    def save_attribute(self, attribute: str, value: Any, data: dict) -> bool:
+        """Save an attribute to data (Modify data and return True or return False for automatic saving)
 
         *Called on saving -
         Don't call this method manually*

@@ -172,13 +172,17 @@ def directory(path: str) -> str:
 def file_type(path: str) -> str:
     """Get the type of a file"""
 
+    if len(name(path).split(".")) == 1:
+        return ""
     return name(path).split(".")[-1]
 
 
 def file_name(path: str) -> str:
     """Get the name of a file without file extension"""
 
-    return ".".join(name(path).split(".")[0:-2]) if len(name(path)) > 1 else ""
+    if len(name(path).split(".")) == 1:
+        return name(path)
+    return ".".join(name(path).split(".")[:-1])
 
 
 def is_file(path: str) -> bool:
@@ -208,6 +212,12 @@ def rename(old_path: str, new_path: str, logger: Logger = None) -> None:
     os.rename(old_path, new_path)
 
 
+def file_size(path: str) -> int:
+    """Get the size of a file"""
+
+    return os.path.getsize(path)
+
+
 def dir_size(path: str, logger: Logger = None) -> int:
     """Get the size of a directory"""
 
@@ -235,12 +245,6 @@ def dir_size(path: str, logger: Logger = None) -> int:
         return 0
 
     return size
-
-
-def file_size(path: str) -> int:
-    """Get the size of a file"""
-
-    return os.path.getsize(path)
 
 
 def format_size_1000(size: int) -> str:

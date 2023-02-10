@@ -20,13 +20,13 @@ from .window.vector3d import Vec3
 from .window.rgb import RGB
 from .window.rgb import RGBColor
 from .window.clock import Clock
-from .window.renderer import Renderer
+from .window.surface_interface import SurfaceInterface
 from .window.debug_screen import DebugScreen
 from .window.event_hook import EventHook
 from .window.scene import Scene
 
 # Constants
-from .constants import AUTHOR, VERSION, CUSTOM_EVENT, SCREEN_UPDATE_EVENT, Transition
+from .constants import AUTHOR, VERSION
 
 __all__ = [
     "time",
@@ -41,13 +41,10 @@ __all__ = [
     "RGB",
     "RGBColor",
     "Clock",
-    "Renderer",
+    "SurfaceInterface",
     "DebugScreen",
     "EventHook",
     "Scene",
     "AUTHOR",
     "VERSION",
-    "CUSTOM_EVENT",
-    "SCREEN_UPDATE_EVENT",
-    "Transition"
 ]

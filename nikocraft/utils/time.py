@@ -3,7 +3,6 @@
 # Standard modules
 import time as _time
 import datetime as _datetime
-from contextlib import contextmanager
 from typing import Callable
 
 
@@ -54,7 +53,7 @@ def time_f_hms() -> str:
 
 def date_f_dmy() -> str:
     """Get the date as a string in the format D.M.Y"""
-    return _datetime.datetime.now().strftime("%d.%b:%y")
+    return _datetime.datetime.now().strftime("%d.%b.%y")
 
 
 def datetime_f_dmy_hms() -> str:
@@ -72,10 +71,13 @@ def datetime_f(datetime_format: str) -> str:
     return _datetime.datetime.now().strftime(datetime_format)
 
 
-@contextmanager
-def benchmark(result: Callable[[float], None]) -> None:
-    """A context manager for benchmarking"""
+def benchmark() -> Callable[[], float]:
+    """Start benchmark"""
+
     start = bench_time()
-    yield
-    end = bench_time()
-    result(end - start)
+
+    def stop() -> float:
+        """Stop benchmark"""
+        return bench_time() - start
+
+    return stop

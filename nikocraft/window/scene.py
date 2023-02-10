@@ -9,43 +9,28 @@ import pygame as pg
 # Local modules
 if TYPE_CHECKING:
     from .window import Window
-from .vector2d import Vec
+from .surface_interface import SurfaceInterface
 
 
-class Scene:
+class Scene(SurfaceInterface):
     """Scene class"""
 
     def __init__(self, window: Window, args: dict = None) -> None:
 
-        # Window and arguments
+        super(Scene, self).__init__("screen")
+
         self.window: Window = window
         self.args: dict = {} if args is None else args
-
-        # Screen cache system
-        self.screen_cache: bool = False
-        self._screen: pg.Surface | None = None
 
     # PROPERTIES
 
     @property
     def screen(self) -> pg.Surface:
-        return self._screen if self.screen_cache else self.window.screen
+        return self.window.screen
 
     @property
     def logger(self) -> logging.Logger:
         return self.window.app.logger
-
-    @property
-    def width(self) -> int:
-        return self.window.screen.get_width()
-
-    @property
-    def height(self) -> int:
-        return self.window.screen.get_height()
-
-    @property
-    def dimension(self) -> Vec:
-        return Vec(self.window.screen.get_width(), self.window.screen.get_height())
 
     @property
     def dt(self) -> float:

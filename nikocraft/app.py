@@ -47,6 +47,7 @@ class App:
         self.logger: logging.Logger = log.create_logger(self.log_file, self.name.upper(), logging.DEBUG if self.debug else logging.INFO, log_thread=log_thread, log_date=log_date)
 
         # Log runtime information
+        self.logger.info(f"Runtime: Python {sys.version.split(' ')[0]}")
         self.logger.info(f"Debug Mode: {'On' if self.debug else 'Off'}")
         self.logger.info(f"Run Path: {os.path.abspath('.')}")
 

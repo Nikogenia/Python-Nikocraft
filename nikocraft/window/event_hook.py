@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 class EventHook:
     """Event hook dataclass"""
 
-    name: str
+    id: int
     events: tuple[int, ...]
     handlers: tuple[Callable[[pg.event.Event, Window, dict], None], ...]
     data: dict
