@@ -11,8 +11,8 @@ class DebugScreen(SurfaceInterface):
     """Renderer class for a debug screen"""
     
     def __init__(self, window: Window, color: RGBColor = RGB.WHITE,
-                 font_name: str = "calibri", font_system: bool = True,
-                 font_size: int = 22, font_antialias: bool = True) -> None:
+                 font_name: str = "consolas", font_system: bool = True,
+                 font_size: int = 20, font_antialias: bool = False) -> None:
 
         super(DebugScreen, self).__init__("screen")
 
@@ -65,5 +65,5 @@ class DebugScreen(SurfaceInterface):
             f"",
             f"Screen: {win.width} x {win.height} px",
             f"",
-            f"Scene: {type(win.scene).__name__ if win.scene_mode else '<off>'}"
+            f"Scene: {win.get_scene_name(win.scene) if win.scene_mode else '<off>'}"
         ]

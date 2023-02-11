@@ -16,7 +16,7 @@ class App:
 
     _initialized = False
 
-    def __init__(self, args: list[str] = None, *, name: str = "Sample Project", author: str = "Nikocraft",
+    def __init__(self, args: list[str] = None, *, name: str = "Sample Project", author: str = "HelloWorld",
                  version: str = "0.0.1", short_description: str = "A short description",
                  description: str = "This is a sample project for the nikocraft library ...",
                  details: str = "Some more details ...", log_path: str = "./logs",

@@ -15,6 +15,7 @@ from ..constants import *
 from ..app import App
 from ..utils import time
 from .vector2d import Vec
+from .rgb import RGB
 from .clock import Clock
 from .font import FontManager
 from .event_hook import EventHook
@@ -30,7 +31,7 @@ class Window(SurfaceInterface):
     def __init__(self, app: App, *, fps: int = DEFAULT_FPS,
                  width: int = DEFAULT_WIDTH, height: int = DEFAULT_HEIGHT,
                  flags: int = 0, auto_update_screen: bool = True, auto_quit: bool = True,
-                 scene_mode: bool = False) -> None:
+                 scene_mode: bool = False, start_scene: str = "", start_scene_args: dict = None) -> None:
 
         super(Window, self).__init__("screen")
 
@@ -59,11 +60,14 @@ class Window(SurfaceInterface):
 
         # Scene management
         self.scene_mode: bool = scene_mode
+        self.start_scene: str = start_scene
+        self.start_scene_args: dict = {} if start_scene_args is None else start_scene_args
         self.scene: Scene | None = None
         self.next_scene_name: str = ""
         self.next_scene_args: dict = {}
-        self.transition_duration: int = 5
+        self.transition_duration: int = 0
         self.transition_tick: float = -1
+        self.transition_surface: pg.Surface = pg.Surface((0, 0))
         self.scene_index: dict[str, type] = {}
 
         # Initialize pygame
@@ -104,6 +108,18 @@ class Window(SurfaceInterface):
         self.logger.info("Open window ...")
         self.screen: pg.Surface = pg.display.set_mode(self.target_dimension, self.flags)
         self.init()
+
+        # Load start scene
+        if self.scene_mode:
+            if self.start_scene == "":
+                if not self.scene_index:
+                    raise ValueError("Empty scene index! Register scenes to use the scene mode ...")
+                self.scene: Scene | None = tuple(self.scene_index.values())[0](self, self.start_scene_args)
+            else:
+                if self.start_scene not in self.scene_index:
+                    raise KeyError("Missing scene in index! Register scenes to use the scene mode ...")
+                self.scene: Scene | None = self.scene_index[self.start_scene](self, self.start_scene_args)
+            self.scene.init()
 
         # Window loop
         self.running = True
@@ -163,7 +179,7 @@ class Window(SurfaceInterface):
             self.stat_l_update_time = benchmark()
 
             # Transition updating
-            if self.transition_tick != 1:
+            if self.transition_tick != -1:
                 self.transition_tick += self.dt
             if self.next_scene_name != "" and self.transition_tick >= self.transition_duration:
                 self.scene.quit()
@@ -171,12 +187,14 @@ class Window(SurfaceInterface):
                 self.next_scene_name = ""
                 self.next_scene_args = {}
                 self.scene.init()
-            if self.transition_tick != 1 and self.transition_tick >= self.transition_duration * 2:
+            if self.transition_tick != -1 and self.transition_tick >= self.transition_duration * 2:
                 self.transition_duration = 0
-                self.transition_tick = 0
+                self.transition_tick = -1
 
         # Shutdown
         self.logger.info("Close window ...")
+        if self.scene_mode:
+            self.scene.quit()
         self.quit()
         pg.quit()
 
@@ -199,11 +217,14 @@ class Window(SurfaceInterface):
                 return True
         return False
 
-    def change_scene(self, name: str, args: dict, transition_duration: int) -> None:
+    def change_scene(self, name: str, args: dict = None, transition_duration: int = 10) -> None:
         """Change the scene"""
 
+        self.logger.info(f"Switch scene to '{name}' with duration of {transition_duration} ...")
+        self.logger.debug(f"Scene arguments: {args}")
+
         self.next_scene_name = name
-        self.next_scene_args = args
+        self.next_scene_args = {} if args is None else args
         self.transition_duration = transition_duration
         self.transition_tick = 0
 
@@ -212,11 +233,30 @@ class Window(SurfaceInterface):
 
         self.scene_index[name] = scene_class
 
+    def get_scene_name(self, scene: Scene) -> str:
+        """Get the name of a scene"""
+
+        for name, scene_class in self.scene_index.items():
+            if isinstance(scene, scene_class):
+                return name
+
     def render_scene(self) -> None:
         """Render the scene and transition"""
 
-        # TODO: Scene rendering
         self.scene.render()
+
+        if self.transition_tick != -1 and self.transition_duration != 0:
+
+            if self.transition_surface.get_width() != self.width or self.transition_surface.get_height() != self.width:
+                self.transition_surface: pg.Surface = pg.Surface(self.dimension)
+                self.transition_surface.fill(RGB.BLACK)
+
+            if self.transition_tick < self.transition_duration:
+                self.transition_surface.set_alpha(int(255 * (self.transition_tick / self.transition_duration)))
+            else:
+                self.transition_surface.set_alpha(int(255 - 255 * ((self.transition_tick - self.transition_duration) / self.transition_duration)))
+
+            self.screen.blit(self.transition_surface, (0, 0))
 
     # ABSTRACT METHODS
 
