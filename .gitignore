@@ -6,8 +6,6 @@ __pycache__
 
 # Testing
 test*
-logs
-resources
 
 # Build files
 build
