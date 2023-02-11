@@ -10,7 +10,7 @@ from .rgb import RGB, RGBColor
 class DebugScreen(SurfaceInterface):
     """Renderer class for a debug screen"""
     
-    def __init__(self, window: Window, color: RGBColor = RGB.WHITE,
+    def __init__(self, window: Window, color: RGBColor = RGB.WHITE, bg_color: RGBColor = RGB.BLACK,
                  font_name: str = "consolas", font_system: bool = True,
                  font_size: int = 20, font_antialias: bool = False) -> None:
 
@@ -18,6 +18,7 @@ class DebugScreen(SurfaceInterface):
 
         self.window: Window = window
         self.color: RGBColor = color
+        self.bg_color: RGBColor = bg_color
         self.font_name: str = font_name
         self.font_system: bool = font_system
         self.font_size: int = font_size
@@ -31,7 +32,7 @@ class DebugScreen(SurfaceInterface):
 
     # METHODS
 
-    def render(self, left_content: list[str] = None) -> None:
+    def render(self, left_content: list[str] = None, right_content: list[str] = None) -> None:
 
         font = self.window.font.get(self.font_name, self.font_size, self.font_system)
         height = font.get_height()
@@ -39,10 +40,22 @@ class DebugScreen(SurfaceInterface):
         if left_content is None:
             left_content = self.left_content()
 
+        if right_content is None:
+            right_content = self.right_content()
+
+        y = 0
+        for line in right_content:
+            if line != "":
+                text = font.render(line, self.font_antialias, self.color, self.bg_color)
+                self.screen.blit(text, (self.width - text.get_width(), y))
+                y += height
+            else:
+                y += 10
+
         y = 0
         for line in left_content:
             if line != "":
-                self.screen.blit(font.render(line, self.font_antialias, self.color), (0, y))
+                self.screen.blit(font.render(line, self.font_antialias, self.color, self.bg_color), (0, y))
                 y += height
             else:
                 y += 10
@@ -52,7 +65,7 @@ class DebugScreen(SurfaceInterface):
         win = self.window
 
         return [
-            f"{win.app.name}   v{win.app.version}   (by {win.app.author})",
+            f"{win.app.name}  v{win.app.version}  (by {win.app.author})",
             f"",
             f"FPS: {win.clock.available_fps:.3f} ({win.clock.real_fps:.3f})",
             f"Delta Time: {win.clock.delta_time_raw*1000:.1f} ms ({win.clock.delta_time:.3f})",
@@ -66,4 +79,14 @@ class DebugScreen(SurfaceInterface):
             f"Screen: {win.width} x {win.height} px",
             f"",
             f"Scene: {win.get_scene_name(win.scene) if win.scene_mode else '<off>'}"
+        ]
+
+    def right_content(self) -> list[str]:
+
+        win = self.window
+
+        return [
+            win.app.runtime,
+            "",
+            win.app.platform
         ]

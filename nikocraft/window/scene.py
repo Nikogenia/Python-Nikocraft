@@ -1,6 +1,6 @@
 # Standard modules
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self, Callable
 import logging
 
 # External modules
@@ -10,6 +10,7 @@ import pygame as pg
 if TYPE_CHECKING:
     from .window import Window
 from .surface_interface import SurfaceInterface
+from .event_hook import EventHook
 
 
 class Scene(SurfaceInterface):
@@ -21,6 +22,8 @@ class Scene(SurfaceInterface):
 
         self.window: Window = window
         self.args: dict = {} if args is None else args
+
+        self.event_hooks: list[EventHook] = []
 
     # PROPERTIES
 
@@ -35,6 +38,43 @@ class Scene(SurfaceInterface):
     @property
     def dt(self) -> float:
         return self.window.clock.delta_time
+
+    # METHODS
+
+    def add_event_hook(self, event: int | tuple[int, ...], handler: tuple[Callable[[pg.event.Event, Self, dict], None], ...] |
+                       Callable[[pg.event.Event, Self, dict], None], data: dict = None) -> EventHook:
+        """Add a new event hook to the scene"""
+
+        hook = self.window.add_event_hook(event, handler, data)
+        self.event_hooks.append(hook)
+        return hook
+
+    def remove_event_hook(self, hook_id: int) -> bool:
+        """Remove a event hook of the scene"""
+
+        self.window.remove_event_hook(hook_id)
+
+        for hook in self.event_hooks:
+            if hook.id == hook_id:
+                self.event_hooks.remove(hook)
+                return True
+        return False
+
+    def activate_event_hooks(self) -> None:
+        """Activate all event hooks of the scene"""
+
+        for hook in self.event_hooks:
+            for h in self.window.event_hooks:
+                if h.id == hook.id:
+                    break
+            else:
+                self.window.event_hooks.append(hook)
+
+    def deactivate_event_hooks(self) -> None:
+        """Deactivate all event hooks of the scene"""
+
+        for hook in self.event_hooks:
+            self.window.remove_event_hook(hook.id)
 
     # ABSTRACT METHODS
 

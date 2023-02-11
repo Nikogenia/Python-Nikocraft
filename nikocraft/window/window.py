@@ -119,6 +119,7 @@ class Window(SurfaceInterface):
                 if self.start_scene not in self.scene_index:
                     raise KeyError("Missing scene in index! Register scenes to use the scene mode ...")
                 self.scene: Scene | None = self.scene_index[self.start_scene](self, self.start_scene_args)
+            self.scene.activate_event_hooks()
             self.scene.init()
 
         # Window loop
@@ -183,9 +184,11 @@ class Window(SurfaceInterface):
                 self.transition_tick += self.dt
             if self.next_scene_name != "" and self.transition_tick >= self.transition_duration:
                 self.scene.quit()
+                self.scene.deactivate_event_hooks()
                 self.scene: Scene | None = self.scene_index[self.next_scene_name](self, self.next_scene_args)
                 self.next_scene_name = ""
                 self.next_scene_args = {}
+                self.scene.activate_event_hooks()
                 self.scene.init()
             if self.transition_tick != -1 and self.transition_tick >= self.transition_duration * 2:
                 self.transition_duration = 0
@@ -195,6 +198,7 @@ class Window(SurfaceInterface):
         self.logger.info("Close window ...")
         if self.scene_mode:
             self.scene.quit()
+            self.scene.deactivate_event_hooks()
         self.quit()
         pg.quit()
 

@@ -4,6 +4,7 @@
 import logging
 import os
 import sys
+import platform
 
 # Local modules
 from .constants import *
@@ -35,6 +36,8 @@ class App:
         self.log_file: str = f"{self.log_path}/log_{time.datetime_f_ymd_hms()}.log"
         self.log_thread: bool = log_thread
         self.log_date: bool = log_date
+        self.runtime: str = f"Python {platform.python_version()}"
+        self.platform: str = platform.system()
 
         # Exit information
         self.exit_code: int = 0
@@ -47,7 +50,8 @@ class App:
         self.logger: logging.Logger = log.create_logger(self.log_file, self.name.upper(), logging.DEBUG if self.debug else logging.INFO, log_thread=log_thread, log_date=log_date)
 
         # Log runtime information
-        self.logger.info(f"Runtime: Python {sys.version.split(' ')[0]}")
+        self.logger.info(f"Runtime: {self.runtime}")
+        self.logger.info(f"Platform: {self.platform}")
         self.logger.info(f"Debug Mode: {'On' if self.debug else 'Off'}")
         self.logger.info(f"Run Path: {os.path.abspath('.')}")
 
