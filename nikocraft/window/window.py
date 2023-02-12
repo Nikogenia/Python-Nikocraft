@@ -42,8 +42,8 @@ class Window(SurfaceInterface):
         self.logger.info("Initialize window ...")
 
         # General information
-        self.screen: pg.Surface = pg.Surface((0, 0))
         self.target_dimension: Vec = Vec(width, height)
+        self.screen: pg.Surface = pg.Surface(self.target_dimension)
         self.running: bool = False
         self.clock: Clock = Clock(fps)
         self.flags: int = flags
@@ -66,6 +66,7 @@ class Window(SurfaceInterface):
         self.next_scene_name: str = ""
         self.next_scene_args: dict = {}
         self.transition_duration: int = 0
+        self.transition_pause: int = 0
         self.transition_tick: float = -1
         self.transition_surface: pg.Surface = pg.Surface((0, 0))
         self.scene_index: dict[str, type] = {}
@@ -190,8 +191,10 @@ class Window(SurfaceInterface):
                 self.next_scene_args = {}
                 self.scene.activate_event_hooks()
                 self.scene.init()
-            if self.transition_tick != -1 and self.transition_tick >= self.transition_duration * 2:
+            if self.transition_tick != -1 \
+               and self.transition_tick >= self.transition_duration * 2 + self.transition_pause:
                 self.transition_duration = 0
+                self.transition_pause = 0
                 self.transition_tick = -1
 
         # Shutdown
@@ -221,8 +224,12 @@ class Window(SurfaceInterface):
                 return True
         return False
 
-    def change_scene(self, name: str, args: dict = None, transition_duration: int = 10) -> None:
+    def change_scene(self, name: str, args: dict = None,
+                     transition_duration: int = 10, transition_pause: int = 5) -> None:
         """Change the scene"""
+
+        if self.next_scene_name == name:
+            return
 
         self.logger.info(f"Switch scene to '{name}' with duration of {transition_duration} ...")
         self.logger.debug(f"Scene arguments: {args}")
@@ -230,6 +237,7 @@ class Window(SurfaceInterface):
         self.next_scene_name = name
         self.next_scene_args = {} if args is None else args
         self.transition_duration = transition_duration
+        self.transition_pause = transition_pause
         self.transition_tick = 0
 
     def register_scene(self, name: str, scene_class: type) -> None:
@@ -257,8 +265,10 @@ class Window(SurfaceInterface):
 
             if self.transition_tick < self.transition_duration:
                 self.transition_surface.set_alpha(int(255 * (self.transition_tick / self.transition_duration)))
+            elif self.transition_tick < self.transition_duration + self.transition_pause:
+                self.transition_surface.set_alpha(255)
             else:
-                self.transition_surface.set_alpha(int(255 - 255 * ((self.transition_tick - self.transition_duration) / self.transition_duration)))
+                self.transition_surface.set_alpha(int(255 - 255 * ((self.transition_tick - self.transition_duration - self.transition_pause) / self.transition_duration)))
 
             self.screen.blit(self.transition_surface, (0, 0))
 

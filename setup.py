@@ -16,7 +16,7 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 
 setup(
     name="nikocraft",
-    version="0.0.3",
+    version="0.0.4",
     description="Nikocraft Python Library",
     long_description=long_description,
     long_description_content_type="text/markdown",

@@ -12,7 +12,7 @@ class DebugScreen(SurfaceInterface):
     
     def __init__(self, window: Window, color: RGBColor = RGB.WHITE, bg_color: RGBColor = RGB.BLACK,
                  font_name: str = "consolas", font_system: bool = True,
-                 font_size: int = 20, font_antialias: bool = False) -> None:
+                 font_size: int = 20, font_antialias: bool = True) -> None:
 
         super(DebugScreen, self).__init__("screen")
 
@@ -67,8 +67,9 @@ class DebugScreen(SurfaceInterface):
         return [
             f"{win.app.name}  v{win.app.version}  (by {win.app.author})",
             f"",
-            f"FPS: {win.clock.available_fps:.3f} ({win.clock.real_fps:.3f})",
-            f"Delta Time: {win.clock.delta_time_raw*1000:.1f} ms ({win.clock.delta_time:.3f})",
+            f"FPS: {win.clock.available_fps:.1f} / {win.clock.available_fps_low:.1f} / " +
+            f"{win.clock.available_fps_lazy:.1f} ({win.clock.real_fps:.1f})",
+            f"Delta Time: {win.clock.delta_time_raw*1000:.1f} ms ({win.clock.delta_time:.2f})",
             f"Timings: {win.clock.frame_durations[-1]*1000:.2f} ms",
             f"   Event: {win.stat_event_time*1000:.2f} ms",
             f"   Render: {win.stat_render_time*1000:.2f} ms",
