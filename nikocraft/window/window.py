@@ -231,6 +231,9 @@ class Window(SurfaceInterface):
         if self.next_scene_name == name:
             return
 
+        if name not in self.scene_index:
+            raise KeyError(f"Missing scene '{name}' in index! Register scene to use it ...")
+
         self.logger.info(f"Switch scene to '{name}' with duration of {transition_duration} ...")
         self.logger.debug(f"Scene arguments: {args}")
 
