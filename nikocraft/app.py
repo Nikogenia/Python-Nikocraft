@@ -76,6 +76,7 @@ class App:
         # Shutdown tasks
         self.logger.info("Quit application ...")
         self.quit()
+        self.logger.info("Exit ...")
         return self.exit_code
 
     # ABSTRACT METHODS
