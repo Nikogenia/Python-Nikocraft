@@ -104,6 +104,7 @@ class Window(SurfaceInterface):
 
         # Check for initialization
         assert self._initialized, "Window was not initialized!"
+        self.running = True
 
         # Open window
         self.logger.info("Open window ...")
@@ -124,7 +125,6 @@ class Window(SurfaceInterface):
             self.scene.init()
 
         # Window loop
-        self.running = True
         while self.running:
 
             # Clock tick
