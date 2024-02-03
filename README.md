@@ -1,4 +1,4 @@
-# Nikocraft Python Library
+# Nikocraft
 A python library with general utils and a pygame framework
 
 
